@@ -6,13 +6,12 @@
 
 # Dataset description
 
-The dataset contains features related to economical and demographical condition of a bank customers.
+The dataset contains features related to the economic and demographic conditions of bank customers.
 
 
 # Project
 
-The aim of this project is to predict if a customer can repay his credit card debts next month.
-To do this classification task we will utilize three approaches:
+The goal of this project is to predict if a customer can repay his credit card debts next month. For this classification task, we will utilize three approaches:
 
     1. Decision Tree
     2. Single layer perceptron
@@ -24,28 +23,26 @@ and compare their efficency.
 
 ### how we can compare the efficency of the three approaches ?
 
-We will utilize this metrics:
+WWe will utilize the following metrics:
 
-    1. Accuracy
+1. Accuracy
 
-        fornisce la percentuale di previsioni corrette rispetto al totale delle previsioni effettuate
+    Provides the percentage of correct predictions compared to the total predictions made.
 
-    2. Precision
+2. Precision
 
-        misura la percentuale di istanze predette come positive che sono realmente positive 
+    Measures the percentage of instances predicted as positive that are truly positive.
+    Precision = True_positives / (True_positives + False_positives)
+    
+3. Recall
 
-        Precision = True_positives / (True_positives + False_positives)
+    Measures the percentage of positive instances that were predicted correctly.
+    
+4. F1-Score:
 
-    3. Recall
+    The harmonic mean between precision and recall.
+    F1 = 2 * (Precision * Recall) / (Precision + Recall)
 
-        misura la percentuale di istanze positive che sono state predette correttamente
+5. Confusion Matrix:
 
-    3. F1-score
-
-        si tratta della media armonica tra la precision e la recall
-
-        F1 = 2 * (Precision * Recall)/(Precision+Recall)
-
-    4. Matrice di confusione
-
-        Mostra il numero di predizioni corrette e gli errori commessi per ciascuna classe
+    Shows the number of correct predictions and errors made for each class.
