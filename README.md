@@ -8,6 +8,26 @@
 
 The dataset contains features related to the economic and demographic conditions of bank customers.
 
+**Dataset characteristics:** Multivariate
+**Subject Area:** Business
+**Task:** Classification
+**Feature type:** Integer,Real
+**Instances:** 30k
+**Features:** 23
+
+**Variable information**
+
+This study utilized a binary variable, default payment (Yes = 1, No = 0), as the response variable. A comprehensive literature review guided the selection of 23 explanatory variables, each serving as a potential predictor. The variables are as follows:
+
+X1: Amount of the given credit (NT dollar): This encompasses both individual consumer credit and supplementary family credit.
+X2: Gender (1 = male; 2 = female).
+X3: Education (1 = graduate school; 2 = university; 3 = high school; 4 = others).
+X4: Marital status (1 = married; 2 = single; 3 = others).
+X5: Age (year).
+X6 - X11: History of past payment. Monthly payment records were tracked from April to September 2005, with X6 representing the repayment status in September 2005, X7 in August 2005, and so forth. The measurement scale for the repayment status includes values such as -1 for paying duly, 1 for payment delay for one month, 2 for payment delay for two months, and up to 9 for payment delay for nine months and above.
+X12-X17: Amount of bill statement (NT dollar). X12 represents the amount of the bill statement in September 2005, X13 in August 2005, and so on up to X17 in April 2005.
+X18-X23: Amount of previous payment (NT dollar). X18 denotes the amount paid in September 2005, X19 in August 2005, and continuing up to X23 in April 2005.
+
 # Project
 
 The goal of this project is to predict if a customer can repay his credit card debts next month. For this classification task, we will utilize three approaches:
@@ -51,6 +71,17 @@ At each division step, the following actions are necessary:
 
 To implement the following approach, we will use the sklearn library and compare a decision tree using the Gini criterion with one using Shannon's entropy.
 
+### Grafici
+
+To provide a clear description of the data, it has been decided to show the following graphs:
+
+a. Numerical comparison between men and women to provide a clear overview of gender distribution in the sample.
+b. Distribution of educational levels.
+c. Distribution of marital status.
+d. Distribution of ages.
+e. Distribution of past payment categories, useful to show the proportion of individuals who paid promptly.
+f. Distribution of credit card bill amounts for each month.
+g. Distribution of amounts of previous payments for each month.
 
 
 ### How can we compare the efficiency of the three approaches?
