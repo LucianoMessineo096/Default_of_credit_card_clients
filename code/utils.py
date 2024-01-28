@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from sklearn.model_selection import train_test_split
 
 def import_data():
 
@@ -10,11 +11,23 @@ def import_data():
             sep=',',
         )
 
+        data = data.drop(data.columns[0],axis=1) # remove ID column
+
         return data
 
     except Exception as e:
         print(f'Errore in utils/import_data: {str(e)}')
 
+
+def split_dataset(dataset,test_size,random_state):
+
+    X, y = dataset.iloc[:, :-1], dataset.iloc[:, -1]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+    return X_train, X_test, y_train, y_test
+
+
+##--------------------------GRAPH----------------------------------------------##
 def create_gender_bar_graph(data, plt1):
 
     sex_col = data.loc[:, 'SEX']
@@ -66,7 +79,6 @@ def create_marriage_graph(data,plt3):
     marriage_col = data.loc[:,"MARRIAGE"]
     marriage_counts = marriage_col.value_counts()
 
-    print(marriage_counts)
     married , single , others, others2 = marriage_counts[1], marriage_counts[2], marriage_counts[3], marriage_counts[0]
 
     plt3.bar(
@@ -82,7 +94,7 @@ def create_past_payement_category_graph(data,plt7):
     payment_history_columns = data.loc[:, 'PAY_0':'PAY_6']
     payment_history_counts = payment_history_columns.apply(lambda col: col.value_counts()).T
 
-    custom_labels = ["April", "May", "June", "July", "August", "September",' ',' ']
+    custom_labels = ["September", "August", "July", "June", "May", "April",' ',' ']
     custom_labels_legend = [
         'paying duly',
         'paying duly',
@@ -123,13 +135,12 @@ def create_bill_state_graph(data,plt5):
     plt5.set_xticklabels(custom_labels)
     plt5.tick_params(axis='x', rotation=45)
     
-
 def create_payement_amount_graph(data,plt6):
 
     pay_state_columns = data.loc[:, 'PAY_AMT1':'PAY_AMT6']
 
     pay_state_sums = pay_state_columns.sum()
-    custom_labels = ["April", "May", "June", "July", "August", "September"]
+    custom_labels = ["September", "August", "July", "June", "May", "April"]
     pay_state_sums.plot(kind='bar', ax=plt6, color='lightcoral')
     plt6.set_title("Total Pay Statement Amounts")
     plt6.set_xlabel("Pay Month")
@@ -150,25 +161,39 @@ def create_age_graph(data,plt4):
 
 def show_graphs(data):
 
-    print(data)
-
-    fig,axes=plt.subplots(
-        nrows=2,
-        ncols=4,
-        figsize=(15, 20)
+    fig1,axes1=plt.subplots(
+        nrows=1,
+        ncols=2,
+        figsize=(10, 10)
     )
 
-    plt1, plt2, plt3, plt4, plt5, plt6, plt7,plt8 = axes.flatten()
+    fig2,axes2=plt.subplots(
+        nrows=1,
+        ncols=2,
+        figsize=(10, 10)
+    )
 
-    #Gender
+    fig3,axes3=plt.subplots(
+        nrows=2,
+        ncols=2,
+        figsize=(10,10)
+    )
+
+    plt1,plt2 = axes1.flatten()
+    plt3,plt4 = axes2.flatten()
+    plt5,plt6,plt7,plt8 = axes3.flatten()
+
 
     create_gender_bar_graph(data,plt1)
     create_education_sex_graph(data,plt2)
     create_marriage_graph(data,plt3)
-    create_past_payement_category_graph(data,plt7)
+    create_age_graph(data,plt4)
     create_bill_state_graph(data,plt5)
     create_payement_amount_graph(data,plt6),
-    create_age_graph(data,plt4)
+    create_past_payement_category_graph(data,plt7)
+    
 
     plt.tight_layout()
     plt.show()
+
+##---------------------------------------------------------------------------##
