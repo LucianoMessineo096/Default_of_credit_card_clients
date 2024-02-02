@@ -2,29 +2,40 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-import pandas as pd
 import numpy as np
 
-class Perceptron(nn.Module):
 
-    def __init__(self,input_size):
+class DeepNeuralNetwork(nn.Module):
+
+    def __init__(self,input_size,hidden_size1,hidden_size2,hidden_size3,hidden_size4,output_size):
 
         super().__init__()
 
-        self.fc = nn.Linear(input_size,1)
-        self.sigmoid = nn.Sigmoid()
-        self.losses= []
+        self.model = nn.Sequential(
+
+            nn.Linear(input_size,hidden_size1),
+            nn.ReLU(),
+            nn.Linear(hidden_size1,hidden_size2),
+            nn.ReLU(),
+            nn.Linear(hidden_size2,hidden_size3),
+            nn.ReLU(),
+            nn.Linear(hidden_size3,hidden_size4),
+            nn.ReLU(),
+            nn.Linear(hidden_size4,output_size),
+            nn.Sigmoid()
+
+        )
+
+        self.losses = []
         self.y_train_preds = []
         self.y_test_preds = []
 
-    def forward(self , x):
 
-        x = self.fc(x)
-        x = self.sigmoid(x)
+    def forward(self,x):
 
-        return x
+        return self.model(x)
 
-    def train_phase(self,X_train,y_train,epochs,lr):
+    def training_phase(self,X_train,y_train,epochs,lr):
 
         criterion = nn.BCELoss()
         optimizer = torch.optim.SGD(self.parameters(),lr=lr)
@@ -37,8 +48,11 @@ class Perceptron(nn.Module):
             loss.backward()
             optimizer.step()
 
+            if epoch % 10 == 0:
+                print(f"Epoch = {epoch} - Loss = {loss.item()}")
+
             self.losses.append(loss.item())
-            if epoch == 1 :
+            if epoch == epochs-1:
                 self.y_train_preds.append(y_pred)
 
 
@@ -50,6 +64,7 @@ class Perceptron(nn.Module):
 
             self.y_test_preds.append(y_pred)
 
+            
     def plot_loss_fn(self):
 
         plt.plot(self.losses, label="Training Loss")
@@ -60,17 +75,11 @@ class Perceptron(nn.Module):
 
     def get_eval_metrics(self,y,y_pred):
 
-        '''print(y_pred)
-        print("-----------------------------------------------------")'''
+        
         y_pred = torch.cat(y_pred,dim=0).detach().numpy().flatten()
-        '''print(y_pred)
-        print("-----------------------------------------------------")'''
         y_pred = (y_pred >= 0.5).astype(float)
-        '''print(y_pred)
-        print("-----------------------------------------------------")'''
-
         y = np.array(y).flatten()
-        '''print(y)'''
+        
 
         accuracy = accuracy_score(y,y_pred) 
         precision = precision_score(y,y_pred)    
@@ -79,16 +88,3 @@ class Perceptron(nn.Module):
         matrix =confusion_matrix(y, y_pred)
 
         return accuracy,precision,recall,f1,matrix
-
-        '''metrics = pd.DataFrame({
-            'accuracy' : accuracy_score(y,y_pred),
-            'precision' : precision_score(y,y_pred),
-            'recall' : recall_score(y,y_pred),
-            'f1': f1_score(y,y_pred),
-            
-        })
-       
-
-        return metrics'''
-    
-    
