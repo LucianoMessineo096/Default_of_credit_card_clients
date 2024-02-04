@@ -1,4 +1,4 @@
-from utils import import_data,show_graphs,get_tensors,preprocessing
+from utils import import_data,show_graphs,get_tensors,preprocessing,test_models
 from DecisionTree import DecisionTree
 from DeepNeuralNetwork import DeepNeuralNetwork
 import pandas as pd
@@ -8,6 +8,7 @@ from sklearn.linear_model import Perceptron
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+import torch
 
 def decision_tree(X_train, X_test, y_train, y_test):
 
@@ -109,22 +110,18 @@ def deep_neural_network(X_train,X_test,y_train,y_test):
 
     print("----------------Deep Neural Network----------------------")
 
-    print(X_train.head())
-    print(X_train.dtypes)
-
     X_train_tensor,X_test_tensor,y_train_tensor,y_test_tensor = get_tensors(X_train,X_test,y_train,y_test)
 
-    print(X_train_tensor)
-
-    input_size = X_train.shape[1] #23
+    input_size = X_train.shape[1] 
     hidden_size1 = 32
     hidden_size2 = 64
-    hidden_size3 = 64
-    hidden_size4 = 32
+    hidden_size3 = 128
+    hidden_size4 = 64
     output_size = 1
 
-    epochs = 100
-    lr = 0.01
+    epochs = 200
+    lr = 0.001
+    weight_decay = 0.001 
 
     deep_neural_network = DeepNeuralNetwork(
         input_size=input_size,
@@ -132,37 +129,33 @@ def deep_neural_network(X_train,X_test,y_train,y_test):
         hidden_size2=hidden_size2,
         hidden_size3=hidden_size3,
         hidden_size4=hidden_size4,
-        output_size=output_size
+        output_size=output_size,
+        lr=lr,
+        epochs=epochs,
+        weight_decay = weight_decay
     )
 
-    deep_neural_network.training_phase(X_train_tensor,y_train_tensor,epochs,lr)
+    deep_neural_network.training_phase(X_train_tensor,y_train_tensor)
 
     deep_neural_network.test_phase(X_test_tensor,y_test_tensor)
 
-    train_accuracy,train_precision,train_recall,train_f1,train_confusion_matrix = deep_neural_network.get_eval_metrics(y_train,deep_neural_network.y_train_preds)
-    test_accuracy,test_precision,test_recall,test_f1,test_confusion_matrix = deep_neural_network.get_eval_metrics(y_test,deep_neural_network.y_test_preds)
+    train_metrics = deep_neural_network.get_eval_metrics(y_train,deep_neural_network.y_train_preds)
+    test_metrics = deep_neural_network.get_eval_metrics(y_test,deep_neural_network.y_test_preds)
 
     print("-------------------------------------------------")
     print("Train metrics")
-    print(
-        f"Accuracy = {train_accuracy}\n"
-        f"Precision = {train_precision}\n"
-        f"Recall = {train_recall}\n"
-        f"F1 = {train_f1}\n"
-        f"Confusion matrix = {train_confusion_matrix}" 
-    )
+    print(train_metrics)
 
     print("--------------------------------------------------")
     print("Test metrics")
-    print(
-        f"Accuracy = {test_accuracy}\n"
-        f"Precision = {test_precision}\n"
-        f"Recall = {test_recall}\n"
-        f"F1 = {test_f1}\n"
-        f"Confusion matrix = {test_confusion_matrix}" 
-    )
+    print(test_metrics)
 
     deep_neural_network.plot_loss_fn()
+
+    deep_neural_network.save_model(
+        deep_neural_network,
+        train_metrics    
+    )
 
 def perceptron(X_train, X_test, y_train, y_test,X,y):
 
@@ -177,8 +170,8 @@ def perceptron(X_train, X_test, y_train, y_test,X,y):
         'conf_matrix': []
     }
 
-    epochs = 100
-    lr = 0.05
+    epochs = 500
+    lr = 0.03
 
     #Model
     perceptron = Perceptron(
@@ -194,7 +187,7 @@ def perceptron(X_train, X_test, y_train, y_test,X,y):
         perceptron.partial_fit(X_train,y_train,classes=np.unique(y_train))
         y_pred_train = perceptron.predict(X_train)
 
-        if (epoch +1 )%10==0:
+        if (epoch +1 )%100==0:
 
             loss = np.mean(y_pred_train != y_train)
             losses.append(loss)
@@ -212,7 +205,7 @@ def perceptron(X_train, X_test, y_train, y_test,X,y):
             train_metrics['f1'].append(train_f1)
             train_metrics['conf_matrix'].append(train_conf_matrix)
 
-    plt.plot(range(10, epochs + 1, 10), losses, label='Loss')
+    plt.plot(range(100, epochs + 1, 100), losses, label='Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title('Perceptron Training Loss')
@@ -265,8 +258,9 @@ def main():
         print("-----------------------------------")
         print("1. Visualizzare le informazioni sul dataset")
         print("2. Visualizzare le prestazioni del percettrone")
-        print("3. Visualizzare le prestazioni della rete neurale")
-        print("4. Visualizzare le prestazioni dell'albero decisionale")
+        print("3. Visualizzare le prestazioni dell'albero decisionale")
+        print("4. Visualizzare le prestazioni della rete neurale")
+        print("5. Effettua il confronto tra le reti neurali")
         print("0. Uscire dal programma")
 
         choice = input("Scegli un'opzione: ")
@@ -278,10 +272,13 @@ def main():
             perceptron(X_train,X_test,y_train,y_test,X,y)
 
         elif choice == '3':
+            decision_tree(X_train, X_test, y_train, y_test)
+            
+        elif choice == '4':
             deep_neural_network(X_train,X_test,y_train,y_test)
 
-        elif choice == '4':
-            decision_tree(X_train, X_test, y_train, y_test)
+        elif choice == '5':
+            test_models(X_train,X_test,y_train,y_test)
 
         elif choice == '0':
             

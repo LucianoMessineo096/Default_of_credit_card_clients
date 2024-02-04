@@ -5,7 +5,9 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 import torch
 from sklearn.preprocessing import StandardScaler
-
+import os
+from DeepNeuralNetwork import DeepNeuralNetwork
+from torchviz import make_dot
 #-----------------------------------PREPROCESSING---------------------------------------------------------------#
 
 def show_heatmap(df):
@@ -309,3 +311,61 @@ def show_graphs(data):
     plt.show()
 
 ##---------------------------------------------------------------------------##
+
+def test_models(X_train, X_test, y_train, y_test):
+
+    X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor = get_tensors(X_train, X_test, y_train, y_test)
+    dir = '../saved_model'
+
+    for file in os.listdir(dir):
+        if file.endswith(".pth"):
+            params = torch.load(os.path.join(dir, file))
+
+            deep_neural_network = DeepNeuralNetwork(
+                input_size=params['structure']['n_neuron_input_layer'],
+                hidden_size1=params['structure']['n_neuron_hidden_layer1'],
+                hidden_size2=params['structure']['n_neuron_hidden_layer2'],
+                hidden_size3=params['structure']['n_neuron_hidden_layer3'],
+                hidden_size4=params['structure']['n_neuron_hidden_layer4'],
+                output_size=params['structure']['out'],
+                lr=params['lr'],
+                epochs=params['epochs'],
+                weight_decay=params['weight_decay']
+            )
+
+            deep_neural_network.load_state_dict(params['model_state_dict'])
+
+            deep_neural_network.test_phase(X_test_tensor, y_test_tensor)
+
+            test_metrics = deep_neural_network.get_eval_metrics(
+                y_test, 
+                deep_neural_network.y_test_preds
+            )
+
+            print('---------------------------------------------------------------------------------')
+            print(
+                f"rete:  {file}\n"
+                f"n_layer:  {len(list(deep_neural_network.parameters()))}\n"
+                f"n_neuron_per_layer:  {[layer.size()[0] for layer in deep_neural_network.parameters()]}\n"
+                f"epochs:  {params.get('epochs', 'N/D')}\n"
+                f"lr:  {params.get('lr', 'N/D')}\n"
+                f"weight_decay:  {params.get('weight_decay','N/D')}\n"
+                
+            )
+
+            print('#####train_metrics#####')
+            print(params['train_metrics'])
+
+            print('#####test_metrics#####')
+            print(test_metrics)
+
+            #visualizzo la rete 
+            
+            '''dot = make_dot(deep_neural_network(X_test_tensor))
+            dot.render(f"{file}", format="png")'''
+
+            
+   
+
+
+
