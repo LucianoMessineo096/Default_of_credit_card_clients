@@ -9,41 +9,43 @@ import pandas as pd
 
 class DeepNeuralNetwork(nn.Module):
 
-    def __init__(self,input_size,hidden_size1,hidden_size2,hidden_size3,hidden_size4,output_size,lr,epochs,weight_decay):
+    def __init__(self,input_size,hidden_sizes,output_size,lr,epochs,weight_decay):
 
         super().__init__()
 
         self.input_size=input_size
-        self.hidden_size1 = hidden_size1
-        self.hidden_size2 = hidden_size2
-        self.hidden_size3 = hidden_size3
-        self.hidden_size4 = hidden_size4
+        self.hidden_sizes = hidden_sizes
         self.output_size = output_size
         self.lr = lr
         self.epochs = epochs
         self.weight_decay = weight_decay
 
+        self.model = self.build_model()
+
         self.criterion = None
         self.optimizer = None
-
-        self.model = nn.Sequential(
-
-            nn.Linear(input_size,hidden_size1),
-            nn.ReLU(),
-            nn.Linear(hidden_size1,hidden_size2),
-            nn.ReLU(),
-            nn.Linear(hidden_size2,hidden_size3),
-            nn.ReLU(),
-            nn.Linear(hidden_size3,hidden_size4),
-            nn.ReLU(),
-            nn.Linear(hidden_size4,output_size),
-            nn.Sigmoid()
-
-        )
 
         self.losses = []
         self.y_train_preds = []
         self.y_test_preds = []
+
+    def build_model(self):
+
+        layers = []
+        prev_layer_size = self.input_size
+
+        for hidden_size in self.hidden_sizes:
+
+            layers.append(nn.Linear(prev_layer_size,hidden_size))
+            layers.append(nn.ReLU())
+            
+            prev_layer_size = hidden_size
+
+        layers.append(nn.Linear(prev_layer_size,self.output_size))
+        layers.append(nn.Sigmoid())
+
+        return nn.Sequential(*layers)
+
 
 
     def forward(self,x):
@@ -134,12 +136,8 @@ class DeepNeuralNetwork(nn.Module):
                 'weight_decay': self.weight_decay,
                 'structure':{
 
-                    'n_hidden_layers': 4,
                     'n_neuron_input_layer':self.input_size,
-                    'n_neuron_hidden_layer1':self.hidden_size1,
-                    'n_neuron_hidden_layer2':self.hidden_size2,
-                    'n_neuron_hidden_layer3':self.hidden_size3,
-                    'n_neuron_hidden_layer4':self.hidden_size4,
+                    'n_neuron_hidden_layers': self.hidden_sizes,
                     'out':1
                 },
                 'train_metrics': train_metrics,

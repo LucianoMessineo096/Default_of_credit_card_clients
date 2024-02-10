@@ -10,6 +10,51 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import torch
 
+def deep_neural_network(X_train,X_test,y_train,y_test):
+
+    print("----------------Deep Neural Network----------------------")
+
+    X_train_tensor,X_test_tensor,y_train_tensor,y_test_tensor = get_tensors(X_train,X_test,y_train,y_test)
+
+    input_size = X_train.shape[1] 
+    hidden_sizes = [32,64,128,64]
+    output_size = 1
+
+    epochs = 1000
+    lr = 0.005
+    weight_decay = 0.005 
+
+    dnn = DeepNeuralNetwork(
+        input_size=input_size,
+        hidden_sizes = hidden_sizes,
+        output_size=output_size,
+        lr=lr,
+        epochs=epochs,
+        weight_decay = weight_decay
+    )
+
+    dnn.training_phase(X_train_tensor,y_train_tensor)
+
+    dnn.test_phase(X_test_tensor,y_test_tensor)
+
+    train_metrics = dnn.get_eval_metrics(y_train,dnn.y_train_preds)
+    test_metrics = dnn.get_eval_metrics(y_test,dnn.y_test_preds)
+
+    print("-------------------------------------------------")
+    print("Train metrics")
+    print(train_metrics)
+
+    print("--------------------------------------------------")
+    print("Test metrics")
+    print(test_metrics)
+
+    dnn.plot_loss_fn()
+
+    dnn.save_model(
+        dnn,
+        train_metrics    
+    )
+
 def decision_tree(X_train, X_test, y_train, y_test):
 
     print("------------------Decision Tree-----------------------")
@@ -106,57 +151,6 @@ def decision_tree(X_train, X_test, y_train, y_test):
     plot_tree(best_dt, feature_names=X_train.columns, class_names=[str(cls) for cls in y_train.unique()], filled=True)
     plt.show()
     
-def deep_neural_network(X_train,X_test,y_train,y_test):
-
-    print("----------------Deep Neural Network----------------------")
-
-    X_train_tensor,X_test_tensor,y_train_tensor,y_test_tensor = get_tensors(X_train,X_test,y_train,y_test)
-
-    input_size = X_train.shape[1] 
-    hidden_size1 = 32
-    hidden_size2 = 64
-    hidden_size3 = 128
-    hidden_size4 = 64
-    output_size = 1
-
-    epochs = 200
-    lr = 0.001
-    weight_decay = 0.001 
-
-    deep_neural_network = DeepNeuralNetwork(
-        input_size=input_size,
-        hidden_size1=hidden_size1,
-        hidden_size2=hidden_size2,
-        hidden_size3=hidden_size3,
-        hidden_size4=hidden_size4,
-        output_size=output_size,
-        lr=lr,
-        epochs=epochs,
-        weight_decay = weight_decay
-    )
-
-    deep_neural_network.training_phase(X_train_tensor,y_train_tensor)
-
-    deep_neural_network.test_phase(X_test_tensor,y_test_tensor)
-
-    train_metrics = deep_neural_network.get_eval_metrics(y_train,deep_neural_network.y_train_preds)
-    test_metrics = deep_neural_network.get_eval_metrics(y_test,deep_neural_network.y_test_preds)
-
-    print("-------------------------------------------------")
-    print("Train metrics")
-    print(train_metrics)
-
-    print("--------------------------------------------------")
-    print("Test metrics")
-    print(test_metrics)
-
-    deep_neural_network.plot_loss_fn()
-
-    deep_neural_network.save_model(
-        deep_neural_network,
-        train_metrics    
-    )
-
 def perceptron(X_train, X_test, y_train, y_test,X,y):
 
     print("----------Percettrone-------------------")
@@ -235,7 +229,6 @@ def perceptron(X_train, X_test, y_train, y_test,X,y):
     print(f"F1-Score: {f1}")
     print("confusion matrix:")
     print(conf_matrix)
-
 
 def main():
 

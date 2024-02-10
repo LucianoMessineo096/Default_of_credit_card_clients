@@ -323,10 +323,7 @@ def test_models(X_train, X_test, y_train, y_test):
 
             deep_neural_network = DeepNeuralNetwork(
                 input_size=params['structure']['n_neuron_input_layer'],
-                hidden_size1=params['structure']['n_neuron_hidden_layer1'],
-                hidden_size2=params['structure']['n_neuron_hidden_layer2'],
-                hidden_size3=params['structure']['n_neuron_hidden_layer3'],
-                hidden_size4=params['structure']['n_neuron_hidden_layer4'],
+                hidden_sizes=params['structure']['n_neuron_hidden_layers'],
                 output_size=params['structure']['out'],
                 lr=params['lr'],
                 epochs=params['epochs'],
