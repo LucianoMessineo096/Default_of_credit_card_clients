@@ -20,9 +20,9 @@ def deep_neural_network(X_train,X_test,y_train,y_test):
     hidden_sizes = [32,64,128,64]
     output_size = 1
 
-    epochs = 1000
-    lr = 0.005
-    weight_decay = 0.005 
+    epochs = 200
+    lr = 0.001
+    weight_decay = 0.001 
 
     dnn = DeepNeuralNetwork(
         input_size=input_size,
