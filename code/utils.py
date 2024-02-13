@@ -37,9 +37,6 @@ def preprocessing(df):
     #drop ID column 
     df =df.drop('ID',axis=1)
 
-    #show features correlation
-    show_heatmap(df)
-
     #hot encoding
     dict = {
         'EDUCATION' : 'EDU',

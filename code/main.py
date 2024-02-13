@@ -1,4 +1,4 @@
-from utils import import_data,show_graphs,get_tensors,preprocessing,test_models
+from utils import import_data,show_graphs,get_tensors,preprocessing,test_models,show_heatmap
 from DecisionTree import DecisionTree
 from DeepNeuralNetwork import DeepNeuralNetwork
 import pandas as pd
@@ -78,8 +78,6 @@ def decision_tree(X_train, X_test, y_train, y_test):
     dt_agent.execute_k_fold_cross_validation()
     cv_metrics = dt_agent.get_cv_metrics()
     
-
-
     #create the new model based on the best depth 
 
     best_depth=5
@@ -98,7 +96,6 @@ def decision_tree(X_train, X_test, y_train, y_test):
     y_pred = best_dt.predict(X_test)
 
     
-
     #get train and test metrics
     train_accuracy = accuracy_score(y_train, y_train_pred)
     train_precision = precision_score(y_train, y_train_pred)
@@ -211,6 +208,7 @@ def perceptron(X_train, X_test, y_train, y_test,X,y):
     print("-------------------------------------------------")
     print("Train metrics")
     print(train_metrics)
+
     #Test phase
     y_pred_test = perceptron.predict(X_test)
     
@@ -236,24 +234,17 @@ def main():
 
     data = import_data()
 
-    #PRE-PROCESSING PHASE
-
-    X,y = preprocessing(data)
-
-    #SPLIT
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=123)
-
     flag = True
 
     while flag:
         print("Default of credits cards clients")
         print("-----------------------------------")
         print("1. Visualizzare le informazioni sul dataset")
-        print("2. Visualizzare le prestazioni del percettrone")
-        print("3. Visualizzare le prestazioni dell'albero decisionale")
-        print("4. Visualizzare le prestazioni della rete neurale")
-        print("5. Effettua il confronto tra le reti neurali")
+        print("2. Visualizzare la correlazione tra le features")
+        print("3. Visualizzare le prestazioni del percettrone")
+        print("4. Visualizzare le prestazioni dell'albero decisionale")
+        print("5. Visualizzare le prestazioni della rete neurale")
+        print("6. Effettua il confronto tra le reti neurali salvate")
         print("0. Uscire dal programma")
 
         choice = input("Scegli un'opzione: ")
@@ -262,15 +253,46 @@ def main():
             show_graphs(data)
 
         elif choice == '2':
-            perceptron(X_train,X_test,y_train,y_test,X,y)
+            show_heatmap(data)
 
         elif choice == '3':
+
+            #PRE-PROCESSING PHASE
+            X,y = preprocessing(data)
+
+            #SPLIT
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=123)
+
+            perceptron(X_train,X_test,y_train,y_test,X,y)
+
+        elif choice == '4':
+
+            #PRE-PROCESSING PHASE
+            X,y = preprocessing(data)
+
+            #SPLIT
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=123)
+
             decision_tree(X_train, X_test, y_train, y_test)
             
-        elif choice == '4':
+        elif choice == '5':
+
+            #PRE-PROCESSING PHASE
+            X,y = preprocessing(data)
+
+            #SPLIT
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=123)
+
             deep_neural_network(X_train,X_test,y_train,y_test)
 
-        elif choice == '5':
+        elif choice == '6':
+
+            #PRE-PROCESSING PHASE
+            X,y = preprocessing(data)
+
+            #SPLIT
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=123)
+
             test_models(X_train,X_test,y_train,y_test)
 
         elif choice == '0':
