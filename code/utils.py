@@ -164,8 +164,6 @@ def create_past_payement_category_graph(data,plt7):
 
     ]
 
-    #bar_width = 0.8 / len(custom_labels)
-
     payment_history_counts.plot(kind='bar', stacked=True, ax=plt7, xticks=range(len(custom_labels)))
     plt7.set_title("Past Payment History Categories Distribution")
     plt7.set_xlabel("Month")
